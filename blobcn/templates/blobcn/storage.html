@@ -1,0 +1,17 @@
+{% extends "blobcn/base.html" %}
+
+{% block title %}Itens - Azure DSM002{% endblock title %}
+
+{% block content %}
+
+    <h1>Itens - Blob Azure DSM002</h1>
+
+    <br><br><br>
+
+    {% for item in blob_urls %}
+        <a href="{{item}}" target="blank">{{item}}</a>
+        <br><br><br>
+    {% endfor %}
+    
+
+{% endblock content %}
