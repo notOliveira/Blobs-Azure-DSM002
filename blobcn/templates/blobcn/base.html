@@ -12,6 +12,34 @@
 
     <title>{% block title %}{% endblock title %}</title>
 
+    <style>
+
+        body {
+            background-color: #303030;
+            color: #fff;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .image-grid a {
+            text-decoration: none;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .image-grid img:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 
 <body>

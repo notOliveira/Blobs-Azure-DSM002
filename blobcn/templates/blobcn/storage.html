@@ -8,10 +8,13 @@
 
     <br><br><br>
 
-    {% for item in blob_urls %}
-        <a href="{{item}}" target="blank">{{item}}</a>
-        <br><br><br>
-    {% endfor %}
+    <div class="image-grid">
+        {% for url in blob_urls %}
+            <a href="{{ url }}" target="_blank">
+                <img src="{{ url }}" alt="Blob Image">
+            </a>
+        {% endfor %}
+    </div>
     
 
 {% endblock content %}
