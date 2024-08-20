@@ -61,6 +61,7 @@ AZURE_ACCOUNT_NAME=<NOME DA CONTA>
 AZURE_CONTAINER=<NOME DO CONTAINER BLOG STORAGE>
 AZURE_ACCOUNT_KEY=<CHAVE DE ACESSO>
 CONNECTION_STRING=<CONNECTION STRING>
+SECRET_KEY=
 ```
 
 O Git não permite que essas informações sejam enviadas. Precisam ser configuradas localmente
