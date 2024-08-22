@@ -65,11 +65,40 @@ def read_entity_view(request, partition_key, row_key):
 
 # Update entity view
 @csrf_exempt
-@require_http_methods(["PUT"])
+@require_http_methods(["GET", "POST"])
 def update_entity_view(request, partition_key, row_key):
-    data = json.loads(request.body)
-    table_service.update_entity(partition_key, row_key, **data)
-    return redirect('list_entities')  # Redireciona para a página de listagem após atualização
+    if request.method == 'POST':
+        try:
+            # Decodifica o JSON vindo no request.body
+            data = json.loads(request.body)
+            print(f'POST: {data}')
+
+            # Verifica se PartitionKey e RowKey estão presentes e corretos
+            if data.get('PartitionKey') != partition_key or data.get('RowKey') != row_key:
+                return HttpResponseBadRequest("PartitionKey ou RowKey inválidos.")
+
+            # Remove PartitionKey e RowKey do dicionário de propriedades
+            properties = {k: v for k, v in data.items() if k not in ['PartitionKey', 'RowKey']}
+            
+            # Atualiza a entidade com as propriedades
+            table_service.update_entity(partition_key, row_key, **properties)
+
+            return JsonResponse({'status': 'success'})  # Responde com sucesso
+        
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Erro ao decodificar o JSON.")
+        except Exception as e:
+            print(f'Erro: {e}')
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    elif request.method == 'GET':
+        try:
+            # Lê a entidade com base em PartitionKey e RowKey
+            entity = table_service.read_entity(partition_key, row_key)
+            return render(request, 'blobcn/update_entity.html', {'entity': entity})
+        except Exception as e:
+            print(f'Erro ao ler entidade: {e}')
+            return JsonResponse({'status': 'error', 'message': 'Erro ao ler a entidade'}, status=500)
 
 # Delete entity view
 def delete_entity_view(request, partition_key, row_key):

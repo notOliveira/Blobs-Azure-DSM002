@@ -1,24 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Entity</title>
-</head>
-<body>
-    <h1>Update Entity</h1>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="PartitionKey" value="{{ entity.PartitionKey }}">
-        <input type="hidden" name="RowKey" value="{{ entity.RowKey }}">
-        {% for key, value in entity.items %}
-            {% if key not in ['PartitionKey', 'RowKey'] %}
+{% extends "blobcn/base.html" %}
+
+{% block title %}Atualizar entidade{% endblock title %}
+
+{% block content %}
+
+<h1>Atualizar entidade</h1>
+<br>
+<form id="entity-form" method="POST" action="{% url 'update_entity' entity.PartitionKey entity.RowKey %}" onsubmit="handleSubmit(event)">
+    {% csrf_token %}
+    <input type="hidden" name="PartitionKey" value="{{ entity.PartitionKey }}">
+    <input type="hidden" name="RowKey" value="{{ entity.RowKey }}">
+
+    <!-- Campos existentes -->
+    {% for key, value in entity.items %}
+        {% if key != "PartitionKey" and key != "RowKey" %}
+            <div class="field-container" data-field-name="{{ key }}">
                 <label for="{{ key }}">{{ key }}:</label>
-                <input type="text" name="{{ key }}" value="{{ value }}"><br>
-            {% endif %}
-        {% endfor %}
-        <button type="submit">Update</button>
-    </form>
-    <a href="{% url 'list_entities' %}">Back to List</a>
-</body>
-</html>
+                <input type="text" name="{{ key }}" value="{{ value }}" placeholder="Existing Field">
+                <button type="button" onclick="removeField(this)">Remover</button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Campos dinâmicos -->
+    <div id="dynamic-fields"></div>
+
+    <button type="submit">Atualizar</button>
+</form>
+
+<br>
+
+<button type="button" onclick="addField()">Adicionar campo</button>
+<br><br>
+
+{% endblock content %}
+
+{% block links %}
+
+<script>
+    let counterNums = 0;
+
+    function addField() {
+        counterNums++;
+        const container = document.getElementById('dynamic-fields');
+
+        // Criar o label para o nome do campo
+        const label = document.createElement('label');
+        label.innerText = `Novo Campo ${counterNums} Nome:`;
+        container.appendChild(label);
+
+        // Criar o input para o nome do campo
+        const inputName = document.createElement('input');
+        inputName.setAttribute('type', 'text');
+        inputName.setAttribute('name', `new_property_name_${counterNums}`);
+        inputName.setAttribute('placeholder', 'Nome do Novo Campo');
+        container.appendChild(inputName);
+
+        // Criar o input para o valor do campo
+        const inputValue = document.createElement('input');
+        inputValue.setAttribute('type', 'text');
+        inputValue.setAttribute('name', `new_property_value_${counterNums}`);
+        inputValue.setAttribute('placeholder', 'Valor do Novo Campo');
+        container.appendChild(inputValue);
+
+        // Criar uma quebra de linha
+        container.appendChild(document.createElement('br'));
+    }
+
+    function removeField(button) {
+        const container = button.parentElement;
+        container.remove(); // Remove o campo existente
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault(); // Evita o envio padrão do formulário
+
+        const formData = new FormData(event.target);
+        const jsonData = {
+            PartitionKey: formData.get('PartitionKey'),
+            RowKey: formData.get('RowKey')
+        };
+
+        // Adiciona as propriedades existentes
+        for (let [key, value] of formData.entries()) {
+            if (!key.startsWith('new_property_') && key !== 'csrfmiddlewaretoken') {
+                jsonData[key] = value;
+            }
+        }
+
+        // Adiciona as propriedades dinâmicas
+        for (let [key, value] of formData.entries()) {
+            if (key.startsWith('new_property_name_')) {
+                const index = key.split('_')[3];
+                const propertyName = value;
+                const propertyValue = formData.get(`new_property_value_${index}`);
+                if (propertyName) {
+                    jsonData[propertyName] = propertyValue;
+                }
+            }
+        }
+
+        // Envia os dados para o backend
+        fetch(event.target.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{% url 'list_entities' %}"; // Redireciona após atualização
+            } else {
+                alert('Erro ao atualizar a entidade');
+            }
+        });
+    }
+</script>
+{% endblock links %}
+s
