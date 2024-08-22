@@ -77,11 +77,20 @@ def update_entity_view(request, partition_key, row_key):
             if data.get('PartitionKey') != partition_key or data.get('RowKey') != row_key:
                 return HttpResponseBadRequest("PartitionKey ou RowKey inválidos.")
 
-            # Remove PartitionKey e RowKey do dicionário de propriedades
+            # Extrai campos removidos e outras propriedades
+            removed_fields = data.pop('removed_fields', [])
             properties = {k: v for k, v in data.items() if k not in ['PartitionKey', 'RowKey']}
-            
-            # Atualiza a entidade com as propriedades
+
+            # Atualiza a entidade com as propriedades novas ou existentes
             table_service.update_entity(partition_key, row_key, **properties)
+
+            # Remove os campos que foram excluídos pelo usuário
+            for field in removed_fields:
+                if field in table_service.read_entity(partition_key, row_key):
+                    del table_service.read_entity(partition_key, row_key)[field]
+            
+            # Salva a entidade atualizada sem os campos removidos
+            table_service.update_entity(partition_key, row_key, **table_service.read_entity(partition_key, row_key))
 
             return JsonResponse({'status': 'success'})  # Responde com sucesso
         

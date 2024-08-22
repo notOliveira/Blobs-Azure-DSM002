@@ -25,6 +25,8 @@
     <!-- Campos dinâmicos -->
     <div id="dynamic-fields"></div>
 
+    <div id="removed-fields"></div>
+
     <button type="submit">Atualizar</button>
 </form>
 
@@ -69,7 +71,17 @@
 
     function removeField(button) {
         const container = button.parentElement;
-        container.remove(); // Remove o campo existente
+        const inputName = container.querySelector('input[type="text"]').name;
+
+        // Se o campo que está sendo removido já existe no backend, precisamos enviar essa informação
+        const removedFieldsContainer = document.querySelector('#removed-fields');
+        const removedField = document.createElement('input');
+        removedField.setAttribute('type', 'hidden');
+        removedField.setAttribute('name', 'removed_fields');
+        removedField.setAttribute('value', inputName);
+        removedFieldsContainer.appendChild(removedField);
+
+        container.remove();
     }
 
     function handleSubmit(event) {
@@ -78,12 +90,13 @@
         const formData = new FormData(event.target);
         const jsonData = {
             PartitionKey: formData.get('PartitionKey'),
-            RowKey: formData.get('RowKey')
+            RowKey: formData.get('RowKey'),
+            removed_fields: []
         };
 
         // Adiciona as propriedades existentes
         for (let [key, value] of formData.entries()) {
-            if (!key.startsWith('new_property_') && key !== 'csrfmiddlewaretoken') {
+            if (!key.startsWith('new_property_') && key !== 'csrfmiddlewaretoken' && key !== 'removed_fields') {
                 jsonData[key] = value;
             }
         }
@@ -98,6 +111,11 @@
                     jsonData[propertyName] = propertyValue;
                 }
             }
+        }
+
+        // Adiciona os campos removidos ao JSON
+        for (let value of formData.getAll('removed_fields')) {
+            jsonData.removed_fields.push(value);
         }
 
         // Envia os dados para o backend
@@ -117,5 +135,8 @@
         });
     }
 </script>
+
+
+
 {% endblock links %}
 s
