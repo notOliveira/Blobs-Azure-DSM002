@@ -18,6 +18,17 @@
     </table>
     <div class="links">
         <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Edit</a>
-        <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
+        <a id="delete-entry" href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
     </div>
 {% endblock content %}
+
+{% block links %}
+<script>
+    const deleteEntityLinks = document.getElementById('delete-entry');
+    deleteEntityLinks.addEventListener('click', (event) => {
+        if (!confirm('Tem certeza que deseja deletar esta entidade?')) {
+            event.preventDefault();
+        }
+    });
+</script>
+{% endblock links %}
