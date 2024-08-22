@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Read Entity</title>
-</head>
-<body>
-    <h1>Entity Details</h1>
-    <table border="1">
+{% extends "blobcn/base.html" %}
+
+{% block title %}Entidade{% endblock title %}
+
+{% block content %}   
+    <h1>Detalhes</h1>
+    <table>
         <tr>
             <th>Key</th>
             <th>Value</th>
@@ -19,8 +16,8 @@
             </tr>
         {% endfor %}
     </table>
-    <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Edit</a>
-    <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
-    <a href="{% url 'list_entities' %}">Back to List</a>
-</body>
-</html>
+    <div class="links">
+        <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Edit</a>
+        <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
+    </div>
+{% endblock content %}

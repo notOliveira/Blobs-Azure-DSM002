@@ -1,23 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entities List</title>
-</head>
-<body>
-    <h1>Entities List</h1>
+{% extends "blobcn/base.html" %}
+
+{% block title %}Entities{% endblock title %}
+
+{% block content %}   
+
+    <h1 class="txt-center ">Lista de entidades</h1>
+    <br><br><br>
     <ul>
         {% for entity in entities %}
-            <li>
-                <strong>Partition Key:</strong> {{ entity.PartitionKey }}<br>
-                <strong>Row Key:</strong> {{ entity.RowKey }}<br>
-                <a href="{% url 'read_entity' entity.PartitionKey entity.RowKey %}">View Details</a>
-                <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Edit</a>
-                <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
-            </li>
+            <div class="txt-center">
+                <strong>Chave da partição:</strong> {{ entity.PartitionKey }}<br>
+                <strong>Chave da linha:</strong> {{ entity.RowKey }}<br>
+            </div> 
+            <div style="width:100vw;display: flex;justify-content: center;">
+                <div class="links" style="width:50%;background-">
+                    <a href="{% url 'read_entity' entity.PartitionKey entity.RowKey %}">Detalhes</a>
+                    <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Editar</a>
+                    <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Deletar</a>
+                </div>
+            </div>
+            <br><br>
         {% endfor %}
     </ul>
-    <a href="{% url 'create_entity' %}">Create New Entity</a>
-</body>
-</html>
+    <a href="{% url 'create_entity' %}">Criar nova entidade</a>
+
+{% endblock content %}

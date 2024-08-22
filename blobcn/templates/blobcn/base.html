@@ -17,13 +17,15 @@
         body {
             background-color: #303030;
             color: #fff;
+            font-size: 25px;
         }
 
         a {
             color: blue;
             text-decoration: none;
-            font-size: 25px;   
+            font-size: 20px;   
         }
+
 
         .links {
             display: flex;
@@ -51,6 +53,46 @@
         .image-grid img:hover {
             transform: scale(1.05);
         }
+        .txt-center {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+            background-color: #404040; /* Fundo da tabela para contraste */
+            color: #f2f2f2; /* Cor do texto */
+          }
+          
+          table, th, td {
+            border: 1px solid #555;
+            padding: 12px;
+          }
+          
+          th {
+            background-color: #505050;
+            color: #f2f2f2;
+            font-weight: bold;
+          }
+          
+          tr:nth-child(even) {
+            background-color: #454545;
+          }
+          
+          td {
+            vertical-align: top;
+          }
+          
+          caption {
+            caption-side: bottom;
+            font-size: 14px;
+            color: #aaa;
+            padding-top: 10px;
+          }
+          
     </style>
 </head>
 
@@ -59,10 +101,10 @@
         <h1>Links</h1>
         
         <div class="links">
-            <a href="{% url 'storage' %}">STORAGE</a>
-            <a href="{% url 'storage' %}">STORAGE</a>
-            <a href="{% url 'storage' %}">STORAGE</a>
-            <a href="{% url 'storage' %}">STORAGE</a>
+            <a href="{% url 'index' %}">Início</a>
+            <a href="{% url 'storage' %}">Mostrar blobs</a>
+            <a href="{% url 'list_entities' %}">Todas as entidades</a>
+            <a href="{% url 'create_entity' %}">Criar entidade</a>
         </div>
     
         {% block content %}
