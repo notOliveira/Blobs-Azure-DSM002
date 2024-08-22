@@ -16,7 +16,7 @@
                 <div class="links" style="width:50%;background-">
                     <a href="{% url 'read_entity' entity.PartitionKey entity.RowKey %}">Detalhes</a>
                     <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Editar</a>
-                    <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Deletar</a>
+                    <a class="delete-entity" href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Deletar</a>
                 </div>
             </div>
             <br><br>
@@ -25,3 +25,17 @@
     <a href="{% url 'create_entity' %}">Criar nova entidade</a>
 
 {% endblock content %}
+
+{% block links %}
+
+<script>
+    const deleteEntityLinks = document.querySelectorAll('.delete-entity');
+    deleteEntityLinks.forEach((element) => {
+        element.addEventListener('click', (event) => {
+            if (!confirm('Tem certeza que deseja deletar esta entidade?')) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock links %}

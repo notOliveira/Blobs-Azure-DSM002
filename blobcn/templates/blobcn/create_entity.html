@@ -1,20 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Entity</title>
-</head>
-<body>
-    <h1>Create Entity</h1>
-    <form method="post">
+
+
+{% extends "blobcn/base.html" %}
+
+{% block title %}Criar entidade{% endblock title %}
+
+{% block content %}   
+    <form id="entity-form" action="{% url 'create_entity' %}" method="POST" onsubmit="handleSubmit(event)">
         {% csrf_token %}
-        <label for="PartitionKey">Partition Key:</label>
-        <input type="text" name="PartitionKey" required><br>
-        <label for="RowKey">Row Key:</label>
-        <input type="text" name="RowKey" required><br>
-        <!-- Adicione campos dinâmicos conforme necessário -->
-        <button type="submit">Create</button>
+        <label for="partition_key">Partition Key:</label>
+        <input type="text" id="partition_key" name="PartitionKey" required><br><br>
+
+        <label for="row_key">Row Key:</label>
+        <input type="text" id="row_key" name="RowKey" required><br><br>
+
+        <div id="dynamic-fields"></div>
+
+        <button type="button" onclick="addField()">Add Field</button>
+        <button type="button" onclick="removeField()">Remove Field</button><br><br>
+
+        <button type="submit">Create Entity</button>
     </form>
-</body>
-</html>
+{% endblock content %}
+
+{% block links %}
+
+<script>
+    const form = document.getElementById('entity-form');
+    let counterNums = 0;
+    function addField() {
+        counterNums++;
+        const container = document.getElementById('dynamic-fields');
+        let fieldCount = container.children.length / 2; // Divide por 2 porque tem 2 filhos por campo (label e input)
+
+        // Criar o label para o nome do campo
+        const label = document.createElement('label');
+        label.innerText = `Property ${counterNums} Name:`;
+        container.appendChild(label);
+
+        // Criar o input para o nome do campo
+        const inputName = document.createElement('input');
+        inputName.setAttribute('type', 'text');
+        inputName.setAttribute('name', `property_name_${fieldCount + 1}`);
+        inputName.setAttribute('placeholder', 'Property Name');
+        container.appendChild(inputName);
+
+        // Criar o input para o valor do campo
+        const inputValue = document.createElement('input');
+        inputValue.setAttribute('type', 'text');
+        inputValue.setAttribute('name', `property_value_${fieldCount + 1}`);
+        inputValue.setAttribute('placeholder', 'Property Value');
+        container.appendChild(inputValue);
+
+        // Criar uma quebra de linha
+        container.appendChild(document.createElement('br'));
+    }
+
+    function removeField() {
+        const container = document.getElementById('dynamic-fields');
+        let fieldCount = container.children.length;
+
+        if (fieldCount > 0) {
+            counterNums--;
+            // Remove os últimos três elementos (inputName, inputValue, e a quebra de linha)
+            container.removeChild(container.lastChild); // remove <br>
+            container.removeChild(container.lastChild); // remove inputValue
+            container.removeChild(container.lastChild); // remove inputName
+            container.removeChild(container.lastChild); // remove label
+        }
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault(); // Evita o envio padrão do formulário
+
+        const formData = new FormData(event.target);
+        const jsonData = {
+            PartitionKey: formData.get('PartitionKey'),
+            RowKey: formData.get('RowKey')
+        };
+
+        // Adiciona as propriedades dinâmicas
+        for (let [key, value] of formData.entries()) {
+            if (key.startsWith('property_name_')) {
+                const index = key.split('_')[2];
+                const propertyName = value;
+                const propertyValue = formData.get(`property_value_${index}`);
+                if (propertyName) {
+                    jsonData[propertyName] = propertyValue;
+                }
+            }
+        }
+
+        // Envia os dados para o backend
+        fetch(event.target.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{% url 'list_entities' %}"; // Redireciona após criação
+            } else {
+                alert('Erro ao criar a entidade');
+            }
+        });
+    }
+</script>
+{% endblock links %}
