@@ -5,6 +5,8 @@
 {% block title %}Criar entidade{% endblock title %}
 
 {% block content %}   
+    <h1>Atualizar entidade</h1>
+    <br>
     <form id="entity-form" action="{% url 'create_entity' %}" method="POST" onsubmit="handleSubmit(event)">
         {% csrf_token %}
         <label for="partition_key">Partition Key:</label>
@@ -15,11 +17,14 @@
 
         <div id="dynamic-fields"></div>
 
-        <button type="button" onclick="addField()">Add Field</button>
-        <button type="button" onclick="removeField()">Remove Field</button><br><br>
-
-        <button type="submit">Create Entity</button>
+        <button type="submit">Criar entidade</button>
+        
     </form>
+
+    <br>
+
+    <button type="button" onclick="addField()">Adicionar campo</button>
+    <button type="button" onclick="removeField()">Remover campo</button><br><br>
 {% endblock content %}
 
 {% block links %}
@@ -94,8 +99,7 @@
         fetch(event.target.action, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(jsonData)
         })
