@@ -18,6 +18,18 @@
             background-color: #303030;
             color: #fff;
         }
+
+        a {
+            color: blue;
+            text-decoration: none;
+            font-size: 25px;   
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
         .image-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -44,6 +56,15 @@
 
 <body>
     <main>
+        <h1>Links</h1>
+        
+        <div class="links">
+            <a href="{% url 'storage' %}">STORAGE</a>
+            <a href="{% url 'storage' %}">STORAGE</a>
+            <a href="{% url 'storage' %}">STORAGE</a>
+            <a href="{% url 'storage' %}">STORAGE</a>
+        </div>
+    
         {% block content %}
 
         {% endblock content %}

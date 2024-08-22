@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Entity</title>
+</head>
+<body>
+    <h1>Update Entity</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="PartitionKey" value="{{ entity.PartitionKey }}">
+        <input type="hidden" name="RowKey" value="{{ entity.RowKey }}">
+        {% for key, value in entity.items %}
+            {% if key not in ['PartitionKey', 'RowKey'] %}
+                <label for="{{ key }}">{{ key }}:</label>
+                <input type="text" name="{{ key }}" value="{{ value }}"><br>
+            {% endif %}
+        {% endfor %}
+        <button type="submit">Update</button>
+    </form>
+    <a href="{% url 'list_entities' %}">Back to List</a>
+</body>
+</html>

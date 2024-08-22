@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entities List</title>
+</head>
+<body>
+    <h1>Entities List</h1>
+    <ul>
+        {% for entity in entities %}
+            <li>
+                <strong>Partition Key:</strong> {{ entity.PartitionKey }}<br>
+                <strong>Row Key:</strong> {{ entity.RowKey }}<br>
+                <a href="{% url 'read_entity' entity.PartitionKey entity.RowKey %}">View Details</a>
+                <a href="{% url 'update_entity' entity.PartitionKey entity.RowKey %}">Edit</a>
+                <a href="{% url 'delete_entity' entity.PartitionKey entity.RowKey %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_entity' %}">Create New Entity</a>
+</body>
+</html>
